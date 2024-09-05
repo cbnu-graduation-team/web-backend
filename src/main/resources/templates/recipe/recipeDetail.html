@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>레시피 상세 - COOKAI</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      flex-direction: column;
+    }
+    .navbar-nav {
+      position: absolute;
+      right: 15px;
+      display: flex;
+      align-items: center;
+    }
+    .navbar-brand p {
+      margin: 0;
+      padding-top: 10px;
+      font-size: 15px;
+    }
+    .navbar-text {
+      margin-right: 10px;
+    }
+    body {
+      background-color: #f8f9fa;
+    }
+    .recipe-header {
+      background-color: #343a40;
+      color: white;
+      padding: 2rem 0;
+    }
+    .recipe-title {
+      font-size: 2.5rem;
+      margin-bottom: 0;
+    }
+    .recipe-image {
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .recipe-description {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #495057;
+    }
+    .recipe-section {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .recipe-section h4 {
+      color: #343a40;
+      border-bottom: 2px solid #dee2e6;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .ingredient-list, .step-list, .rating-list {
+      padding-left: 1.5rem;
+    }
+    .ingredient-list li, .step-list li, .rating-list li {
+      margin-bottom: 0.5rem;
+    }
+    .rating-list .rating-item {
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #dee2e6;
+      padding-bottom: 0.5rem;
+    }
+    .rating-item .username {
+      font-weight: bold;
+    }
+  </style>
+  <script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+      const storedUsername = localStorage.getItem('username');
+      if (storedUsername) {
+        document.getElementById('header-username').textContent = `안녕하세요, ${storedUsername}`;
+        document.getElementById('login-item').style.display = 'none';
+        document.getElementById('signup-item').style.display = 'none';
+        document.getElementById('welcome-item').style.display = 'inline';
+        document.getElementById('logout-item').style.display = 'inline';
+      }
+
+      // 설명 텍스트 자르기
+      const cardTexts = document.querySelectorAll('.card-text');
+      cardTexts.forEach(text => {
+        const content = text.textContent;
+        if (content.length > 100) {
+          text.textContent = content.slice(0, 100) + '...';
+        }
+      });
+    });
+  </script>
+  <script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+      const token = localStorage.getItem('jwtToken');
+
+      document.querySelectorAll('.delete-review-btn').forEach(button => {
+        button.addEventListener('click', function(event) {
+          event.preventDefault();
+
+          const form = this.closest('form');
+          const action = form.getAttribute('th:action');
+
+          fetch(action, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams(new FormData(form))
+          })
+                  .then(response => {
+                    if (response.ok) {
+                      alert('리뷰가 삭제되었습니다.');
+                      window.location.reload();
+                    } else {
+                      alert('리뷰 삭제에 실패했습니다.');
+                    }
+                  })
+                  .catch(error => {
+                    console.error('삭제 요청 중 오류가 발생했습니다.', error);
+                    alert('리뷰 삭제 중 오류가 발생했습니다.');
+                  });
+        });
+      });
+    });
+
+
+  </script>
+
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<!-- Header -->
+<header class="bg-dark text-white">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">
+        <h1>COOKAI</h1>
+        <p>나만의 레시피를 추천받아보세요!</p>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item" id="login-item">
+            <a class="nav-link" href="/users/login">로그인</a>
+          </li>
+          <li class="nav-item" id="signup-item">
+            <a class="nav-link" href="/users/signup">회원가입</a>
+          </li>
+          <li class="nav-item" id="welcome-item" style="display:none;">
+            <span class="navbar-text" id="header-username"></span>
+          </li>
+          <li class="nav-item" id="logout-item" style="display:none;">
+            <a class="nav-link" href="/users/logout">로그아웃</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- Main Content -->
+<main class="container my-5">
+  <h2 th:text="${recipe.title}" class="text-center my-4" style="font-weight: bold; font-size: 2.5rem;">레시피 제목</h2>
+  <div class="row">
+    <div class="col-lg-8 mx-auto">
+      <img th:src="@{${recipe.thumbnail}}" class="img-fluid recipe-image mb-4" alt="레시피 썸네일">
+
+      <div class="recipe-section">
+        <p class="recipe-description" th:text="${recipe.description}">레시피 설명</p>
+      </div>
+
+      <div class="recipe-section">
+        <h4>재료</h4>
+        <ul class="ingredient-list">
+          <li th:each="ingredient : ${recipe.ingredients}" th:text="${ingredient.ingredient.name}">재료</li>
+        </ul>
+      </div>
+
+      <div class="recipe-section">
+        <h4>조리 단계</h4>
+        <ol class="step-list">
+          <li th:each="step : ${recipe.steps}" th:text="${step.description}">단계 설명</li>
+        </ol>
+      </div>
+
+      <!-- 리뷰 목록 -->
+      <div class="recipe-section">
+        <h4>리뷰</h4>
+        <ul class="rating-list">
+          <li class="rating-item" th:each="rating : ${ratings.content}">
+            <span class="username" th:text="${rating.username}">사용자 이름</span>
+            <span class="rating">
+        <span th:each="i : ${#numbers.sequence(1, rating.rating)}">⭐</span>
+            </span>
+            <p th:text="${rating.comment}">리뷰 내용</p>
+
+            <!-- 삭제 버튼 -->
+            <form th:if="${rating.username == username}" th:action="@{/recipes/{id}/deleteReview(id=${recipe.id})}" method="post">
+              <input type="hidden" name="reviewId" th:value="${rating.id}" />
+              <input type="hidden" name="token" th:value="${token}" />
+              <button type="submit" class="btn btn-danger btn-sm">리뷰 삭제</button>
+            </form>
+
+          </li>
+        </ul>
+      </div>
+
+
+      <div th:if="${ratings.totalElements > 0}">
+        <nav aria-label="Page navigation" class="mt-4">
+          <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${ratings.number == 0} ? 'disabled'">
+              <a class="page-link"
+                 th:href="@{/recipes/{id}(id=${recipe.id}, page=${ratings.number - 1}, token=${token})}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            <li class="page-item" th:each="pageNum : ${#numbers.sequence(1, ratings.totalPages)}"
+                th:classappend="${pageNum - 1 == ratings.number} ? 'active'">
+              <a class="page-link" th:text="${pageNum}"
+                 th:href="@{/recipes/{id}(id=${recipe.id}, page=${pageNum - 1}, token=${token})}">1</a>
+            </li>
+            <li class="page-item" th:classappend="${ratings.number + 1 == ratings.totalPages} ? 'disabled'">
+              <a class="page-link"
+                 th:href="@{/recipes/{id}(id=${recipe.id}, page=${ratings.number + 1}, token=${token})}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+
+
+      <!-- 리뷰 작성 폼 -->
+      <div class="recipe-section review-section" id="review-form" style="display: none;">
+        <h4>리뷰 작성</h4>
+        <form th:action="@{/recipes/{id}/rate(id=${recipe.id})}" method="post">
+          <!-- JWT 토큰 전송을 위한 hidden input -->
+          <input type="hidden" name="token" id="token" />
+          <!-- 별점 선택 -->
+          <div class="rating-stars mb-3 d-flex justify-content-center">
+            <span class="star" data-value="1">☆</span>
+            <span class="star" data-value="2">☆</span>
+            <span class="star" data-value="3">☆</span>
+            <span class="star" data-value="4">☆</span>
+            <span class="star" data-value="5">☆</span>
+          </div>
+          <input type="hidden" name="rating" id="rating" value="0" />
+          <div class="mb-3">
+            <label for="comment" class="form-label">리뷰:</label>
+            <textarea id="comment" name="comment" class="form-control" rows="4" placeholder="리뷰를 입력하세요..." required></textarea>
+          </div>
+          <div class="text-center">
+            <button type="submit" class="btn btn-primary">리뷰 제출</button>
+          </div>
+        </form>
+      </div>
+      <!-- 로그인되지 않은 사용자는 리뷰 작성 폼 대신 로그인 메시지 표시 -->
+      <div th:if="${token.equals('null')}" class="alert alert-warning" role="alert">
+        리뷰를 작성하려면 로그인이 필요합니다.
+      </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          const token = localStorage.getItem('jwtToken');
+          const reviewForm = document.getElementById('review-form');
+
+          if (token) {
+            document.getElementById('token').value = token;
+            reviewForm.style.display = 'block'; // 로그인된 경우 폼 표시
+          } else {
+            reviewForm.style.display = 'none'; // 로그인되지 않은 경우 폼 숨김
+          }
+
+          const stars = document.querySelectorAll('.star');
+          const ratingInput = document.getElementById('rating');
+          let currentRating = 0;
+
+          function updateStars(rating) {
+            stars.forEach((star, index) => {
+              if (index < rating) {
+                star.style.color = '#ffcc00';
+                star.textContent = '★';
+              } else {
+                star.style.color = '#ccc';
+                star.textContent = '☆';
+              }
+            });
+          }
+
+          stars.forEach(star => {
+            star.addEventListener('mouseover', function() {
+              const value = parseInt(this.getAttribute('data-value'));
+              updateStars(value);
+            });
+
+            star.addEventListener('mouseout', function() {
+              updateStars(currentRating);
+            });
+
+            star.addEventListener('click', function() {
+              const value = parseInt(this.getAttribute('data-value'));
+              currentRating = value;
+              ratingInput.value = value;
+              updateStars(value);
+            });
+          });
+        });
+      </script>
+    </div>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="mt-auto bg-dark text-white text-center py-3">
+  <p>&copy; 2024 COOKAI. All rights reserved.</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

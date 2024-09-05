@@ -15,7 +15,9 @@ public enum SuccessMessages {
     RECOM_SUCCESS(HttpStatus.OK, "레시피 추천 성공"),
     LOAD_RECIPE_SUCCESS(HttpStatus.OK, "레시피 전체조회 성공"),
     LOAD_RECIPE_DETAIL_SUCCESS(HttpStatus.OK, "레시피 상세조회 성공"),
-    EMPTY_INVENTORY(HttpStatus.NO_CONTENT,"냉장고에 재료가 없습니다.");
+    EMPTY_INVENTORY(HttpStatus.OK,"냉장고에 재료가 없습니다."),
+    CREATE_RATING_SUCCESS(HttpStatus.OK, "평가 추가 완료"),
+    LOAD_RATINGS_SUCCESS(HttpStatus.OK, "평가 불러오기 성공");
 
     private final HttpStatus httpStatus;
     private final String message;

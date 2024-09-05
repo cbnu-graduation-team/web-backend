@@ -1,6 +1,7 @@
 package com.recipe.backend.domain.recipe.domain;
 
 import com.recipe.backend.domain.ingredient.domain.Ingredient;
+import com.recipe.backend.domain.rating.domain.RecipeRating;
 import com.recipe.backend.domain.recipe_ingredient.domain.RecipeIngredient;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -36,6 +37,8 @@ public class Recipe {
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecipeStep> steps = new ArrayList<>();
 
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RecipeRating> ratings = new ArrayList<>();
     // Helper method to add a RecipeStep to this Recipe
     public void addStep(RecipeStep step) {
         steps.add(step);

@@ -4,8 +4,10 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class SignupRequest {
     @NotNull
     @Size(min = 3, max = 30, message = "아이디는 3글자 이상 30글자 미만이여야 합니다.")

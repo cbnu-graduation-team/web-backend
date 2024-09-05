@@ -1,8 +1,7 @@
-package com.recipe.backend.domain.recommand.controller;
+package com.recipe.backend.domain.recommend.controller;
 
-import com.recipe.backend.domain.inventory.dto.IngredientsRequest;
-import com.recipe.backend.domain.recommand.domain.RecommendationResponseDTO;
-import com.recipe.backend.domain.recommand.service.RecommendService;
+import com.recipe.backend.domain.recommend.domain.dto.RecommendationDTO;
+import com.recipe.backend.domain.recommend.service.RecommendService;
 import com.recipe.backend.global.config.auth.JwtUtil;
 import com.recipe.backend.global.response.ApiResponse;
 import com.recipe.backend.global.response.SuccessMessages;
@@ -20,9 +19,9 @@ public class RecommendController {
     private final JwtUtil jwtUtil;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<List<RecommendationResponseDTO>>> recommendRecipes(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse<List<RecommendationDTO>>> recServerRecommendRecipes(@RequestHeader("Authorization") String token) {
         String username = jwtUtil.getUserNameFromJwtToken(token);
-        List<RecommendationResponseDTO> recommendations = recommendService.recommendRecipe(username);
+        List<RecommendationDTO> recommendations = recommendService.recServerRecommendRecipes(username);
         return ApiResponse.success(SuccessMessages.RECOM_SUCCESS, recommendations);
     }
 }

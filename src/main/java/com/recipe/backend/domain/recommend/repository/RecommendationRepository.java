@@ -1,6 +1,6 @@
-package com.recipe.backend.domain.recommand.repository;
+package com.recipe.backend.domain.recommend.repository;
 
-import com.recipe.backend.domain.recommand.domain.Recommendation;
+import com.recipe.backend.domain.recommend.domain.Recommendation;
 import com.recipe.backend.domain.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 

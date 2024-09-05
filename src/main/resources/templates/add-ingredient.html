@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>재료 추가 - COOKAI</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+  <h2>냉장고에 재료 추가</h2>
+
+  <!-- 재료 추가 폼 -->
+  <form th:action="@{/inventory/add}" method="post" class="mb-3">
+    <div class="mb-3">
+      <label for="ingredientName" class="form-label">재료 이름</label>
+      <input type="text" class="form-control" id="ingredientName" name="name" required>
+    </div>
+    <div class="mb-3">
+      <label for="expiryDate" class="form-label">유통기한</label>
+      <input type="date" class="form-control" id="expiryDate" name="expiryDate" required>
+    </div>
+    <input type="hidden" name="token" id="token">
+    <button type="submit" class="btn btn-primary">추가</button>
+  </form>
+
+  <!-- 뒤로 가기 버튼 -->
+  <a th:href="@{/inventory(token=${token})}" class="btn btn-secondary">뒤로 가기</a>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const token = localStorage.getItem('jwtToken');
+    if (token) {
+      document.getElementById('token').value = token;
+    } else {
+      alert('로그인이 필요합니다.');
+      window.location.href = "/users/login";
+    }
+  });
+</script>
+</body>
+</html>

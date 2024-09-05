@@ -4,7 +4,6 @@ import com.recipe.backend.global.exception.custom.JwtAuthenticationException;
 import com.recipe.backend.global.response.ErrorMessage;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,8 +24,8 @@ import java.io.IOException;
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-
     private final CustomUserDetailsService userDetailsService;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -42,11 +41,12 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
+            filterChain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
-            throw new JwtAuthenticationException(ErrorMessage.TOKEN_EXPIRED.getMessage());
+            customAuthenticationEntryPoint.commence(request, response, new JwtAuthenticationException(ErrorMessage.TOKEN_EXPIRED.getMessage()));
+        } catch (Exception e) {
+            customAuthenticationEntryPoint.commence(request, response, new JwtAuthenticationException("Authentication error"));
         }
-
-        filterChain.doFilter(request, response);
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {

@@ -1,4 +1,4 @@
-package com.recipe.backend.domain.recommand.domain;
+package com.recipe.backend.domain.recommend.domain;
 
 import com.recipe.backend.domain.recipe.domain.Recipe;
 import com.recipe.backend.domain.user.domain.User;

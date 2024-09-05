@@ -75,16 +75,23 @@ public class RecipeService {
             recipeRepository.save(recipe);
         }
     }
-    public Page<RecipeAllResponseDTO> getRecipes(int page, int size) {
+    public Page<RecipeAllResponseDTO> getRecipes(int page, int size, String keyword) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Recipe> recipePage = recipeRepository.findAll(pageable);
-        return recipePage.map(recipe -> new RecipeAllResponseDTO(
-                recipe.getId(),
-                recipe.getTitle(),
-                recipe.getThumbnail(),
-                recipe.getDescription()
-        ));
+
+        if (keyword == null || keyword.isEmpty()) {
+            // 검색어가 없을 경우, 전체 레시피 반환
+            return recipeRepository.findAll(pageable).map(this::toDto);
+        } else {
+            // 검색어가 있을 경우, 제목 또는 설명에 키워드가 포함된 레시피 필터링
+            return recipeRepository.findByTitleContaining(keyword, pageable)
+                    .map(this::toDto);
+        }
     }
+
+    private RecipeAllResponseDTO toDto(Recipe recipe) {
+        return new RecipeAllResponseDTO(recipe.getId(), recipe.getTitle(), recipe.getThumbnail(), recipe.getDescription());
+    }
+
 
     public RecipeDetailResponseDTO getRecipeById(Long id) {
         Optional<Recipe> recipeOptional = recipeRepository.findById(id);
