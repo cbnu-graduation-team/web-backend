@@ -19,16 +19,22 @@ public class RedisService {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
 
+    // RedisService.java
     public void recordRecipeView(String token, Long recipeId) {
         String username = jwtUtil.getUserNameFromJwtToken(token);
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND.getMessage()));
-        String key = "user:" + user.getId() + ":views";
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND.getMessage()));
+        String userKey = "user:" + user.getId() + ":views";
         String value = String.valueOf(recipeId);
 
         ListOperations<String, String> listOps = redisTemplate.opsForList();
-        listOps.rightPush(key, value);  // 리스트의 오른쪽에 값을 추가
+        listOps.rightPush(userKey, value);  // 사용자별 조회 기록 추가
 
-        // 만료 시간을 설정하려면 아래 코드를 사용
-        redisTemplate.expire(key, 30, TimeUnit.DAYS);
+        // 사용자별 조회 기록의 만료 시간 설정
+        redisTemplate.expire(userKey, 30, TimeUnit.DAYS);
+
+        // 전역 조회수 Sorted Set 업데이트
+        redisTemplate.opsForZSet().incrementScore("recipes:global_views", String.valueOf(recipeId), 1);
     }
+
 }

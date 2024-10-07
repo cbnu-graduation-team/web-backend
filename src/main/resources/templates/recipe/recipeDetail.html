@@ -1,10 +1,15 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
   <meta charset="UTF-8">
   <title>레시피 상세 - COOKAI</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #f8f9fa;
+    }
     .navbar-brand {
       display: flex;
       align-items: center;
@@ -12,50 +17,45 @@
       width: 100%;
       flex-direction: column;
     }
+    .navbar-brand h1 {
+      font-size: 2rem;
+      margin-bottom: 0;
+    }
+    .navbar-brand p {
+      font-size: 1rem;
+      margin-top: 0;
+      padding-top: 10px;
+    }
     .navbar-nav {
       position: absolute;
       right: 15px;
       display: flex;
       align-items: center;
     }
-    .navbar-brand p {
-      margin: 0;
-      padding-top: 10px;
-      font-size: 15px;
-    }
-    .navbar-text {
-      margin-right: 10px;
-    }
-    body {
-      background-color: #f8f9fa;
-    }
     .recipe-header {
-      background-color: #343a40;
+      background-color: #0d6efd;
       color: white;
-      padding: 2rem 0;
+      padding: 50px 0;
+      text-align: center;
     }
-    .recipe-title {
-      font-size: 2.5rem;
-      margin-bottom: 0;
+    .recipe-content {
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-top: -50px;
     }
     .recipe-image {
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    .recipe-description {
-      font-size: 1.1rem;
-      line-height: 1.6;
-      color: #495057;
+      max-width: 100%;
+      height: auto;
     }
     .recipe-section {
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      padding: 1.5rem;
       margin-bottom: 2rem;
     }
     .recipe-section h4 {
-      color: #343a40;
+      color: #0d6efd;
       border-bottom: 2px solid #dee2e6;
       padding-bottom: 0.5rem;
       margin-bottom: 1rem;
@@ -74,7 +74,20 @@
     .rating-item .username {
       font-weight: bold;
     }
+    .btn-custom {
+      transition: transform 0.3s, background-color 0.3s;
+    }
+    .btn-custom:hover {
+      transform: translateY(-5px);
+      background-color: #0056b3;
+      color: white;
+    }
+    footer {
+      background-color: #343a40;
+      color: white;
+    }
   </style>
+
   <script th:inline="javascript">
     document.addEventListener("DOMContentLoaded", function() {
       const storedUsername = localStorage.getItem('username');
@@ -145,22 +158,23 @@
         <h1>COOKAI</h1>
         <p>나만의 레시피를 추천받아보세요!</p>
       </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
+        <ul class="navbar-nav ms-auto align-items-center">
           <li class="nav-item" id="login-item">
-            <a class="nav-link" href="/users/login">로그인</a>
+            <a class="nav-link" href="/users/login"><i class="fas fa-sign-in-alt"></i> 로그인</a>
           </li>
           <li class="nav-item" id="signup-item">
-            <a class="nav-link" href="/users/signup">회원가입</a>
+            <a class="nav-link" href="/users/signup"><i class="fas fa-user-plus"></i> 회원가입</a>
           </li>
           <li class="nav-item" id="welcome-item" style="display:none;">
             <span class="navbar-text" id="header-username"></span>
           </li>
           <li class="nav-item" id="logout-item" style="display:none;">
-            <a class="nav-link" href="/users/logout">로그아웃</a>
+            <a class="nav-link" href="/users/logout"><i class="fas fa-sign-out-alt"></i> 로그아웃</a>
           </li>
         </ul>
       </div>
@@ -168,164 +182,176 @@
   </nav>
 </header>
 
+<!-- Recipe Header -->
+<section class="recipe-header">
+  <div class="container">
+    <h2 class="display-4" th:text="${recipe.title}">레시피 제목</h2>
+  </div>
+</section>
+
 <!-- Main Content -->
-<main class="container my-5">
-  <h2 th:text="${recipe.title}" class="text-center my-4" style="font-weight: bold; font-size: 2.5rem;">레시피 제목</h2>
+<main class="container">
   <div class="row">
     <div class="col-lg-8 mx-auto">
-      <img th:src="@{${recipe.thumbnail}}" class="img-fluid recipe-image mb-4" alt="레시피 썸네일">
+      <div class="recipe-content">
+        <img th:src="@{${recipe.thumbnail}}" class="img-fluid recipe-image mb-4" alt="레시피 썸네일">
 
-      <div class="recipe-section">
-        <p class="recipe-description" th:text="${recipe.description}">레시피 설명</p>
-      </div>
+        <div class="recipe-section">
+          <h4>레시피 설명</h4>
+          <p class="recipe-description" th:text="${recipe.description}">레시피 설명</p>
+        </div>
 
-      <div class="recipe-section">
-        <h4>재료</h4>
-        <ul class="ingredient-list">
-          <li th:each="ingredient : ${recipe.ingredients}" th:text="${ingredient.ingredient.name}">재료</li>
-        </ul>
-      </div>
+        <div class="recipe-section">
+          <h4>재료</h4>
+          <ul class="ingredient-list">
+            <li th:each="ingredient : ${recipe.ingredients}" th:text="${ingredient.ingredient.name}">재료</li>
+          </ul>
+        </div>
 
-      <div class="recipe-section">
-        <h4>조리 단계</h4>
-        <ol class="step-list">
-          <li th:each="step : ${recipe.steps}" th:text="${step.description}">단계 설명</li>
-        </ol>
-      </div>
+        <div class="recipe-section">
+          <h4>조리 단계</h4>
+          <ol class="step-list">
+            <li th:each="step : ${recipe.steps}" th:text="${step.description}">단계 설명</li>
+          </ol>
+        </div>
 
-      <!-- 리뷰 목록 -->
-      <div class="recipe-section">
-        <h4>리뷰</h4>
-        <ul class="rating-list">
-          <li class="rating-item" th:each="rating : ${ratings.content}">
-            <span class="username" th:text="${rating.username}">사용자 이름</span>
-            <span class="rating">
-        <span th:each="i : ${#numbers.sequence(1, rating.rating)}">⭐</span>
-            </span>
-            <p th:text="${rating.comment}">리뷰 내용</p>
+        <!-- 리뷰 목록 -->
+        <div class="recipe-section">
+          <h4>리뷰</h4>
+          <ul class="rating-list list-unstyled">
+            <li class="rating-item" th:each="rating : ${ratings.content}">
+              <span class="username" th:text="${rating.username}">사용자 이름</span>
+              <span class="rating">
+                                <span th:each="i : ${#numbers.sequence(1, rating.rating)}">⭐</span>
+                            </span>
+              <p th:text="${rating.comment}">리뷰 내용</p>
 
-            <!-- 삭제 버튼 -->
-            <form th:if="${rating.username == username}" th:action="@{/recipes/{id}/deleteReview(id=${recipe.id})}" method="post">
-              <input type="hidden" name="reviewId" th:value="${rating.id}" />
-              <input type="hidden" name="token" th:value="${token}" />
-              <button type="submit" class="btn btn-danger btn-sm">리뷰 삭제</button>
-            </form>
-
-          </li>
-        </ul>
-      </div>
-
-
-      <div th:if="${ratings.totalElements > 0}">
-        <nav aria-label="Page navigation" class="mt-4">
-          <ul class="pagination justify-content-center">
-            <li class="page-item" th:classappend="${ratings.number == 0} ? 'disabled'">
-              <a class="page-link"
-                 th:href="@{/recipes/{id}(id=${recipe.id}, page=${ratings.number - 1}, token=${token})}" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-              </a>
-            </li>
-            <li class="page-item" th:each="pageNum : ${#numbers.sequence(1, ratings.totalPages)}"
-                th:classappend="${pageNum - 1 == ratings.number} ? 'active'">
-              <a class="page-link" th:text="${pageNum}"
-                 th:href="@{/recipes/{id}(id=${recipe.id}, page=${pageNum - 1}, token=${token})}">1</a>
-            </li>
-            <li class="page-item" th:classappend="${ratings.number + 1 == ratings.totalPages} ? 'disabled'">
-              <a class="page-link"
-                 th:href="@{/recipes/{id}(id=${recipe.id}, page=${ratings.number + 1}, token=${token})}" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-              </a>
+              <!-- 삭제 버튼 -->
+              <form th:if="${rating.username == username}" th:action="@{/recipes/{id}/deleteReview(id=${recipe.id})}" method="post">
+                <input type="hidden" name="reviewId" th:value="${rating.id}" />
+                <input type="hidden" name="token" th:value="${token}" />
+                <button type="submit" class="btn btn-danger btn-sm btn-custom delete-review-btn">리뷰 삭제</button>
+              </form>
             </li>
           </ul>
-        </nav>
+        </div>
+
+        <!-- 페이지네이션 -->
+        <div th:if="${ratings.totalElements > 0}">
+          <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+              <li class="page-item" th:classappend="${ratings.number == 0} ? 'disabled'">
+                <a class="page-link" th:href="@{/recipes/{id}(id=${recipe.id}, page=${ratings.number - 1}, token=${token})}" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+              <li class="page-item" th:each="pageNum : ${#numbers.sequence(1, ratings.totalPages)}"
+                  th:classappend="${pageNum - 1 == ratings.number} ? 'active'">
+                <a class="page-link" th:text="${pageNum}" th:href="@{/recipes/{id}(id=${recipe.id}, page=${pageNum - 1}, token=${token})}">1</a>
+              </li>
+              <li class="page-item" th:classappend="${ratings.number + 1 == ratings.totalPages} ? 'disabled'">
+                <a class="page-link" th:href="@{/recipes/{id}(id=${recipe.id}, page=${ratings.number + 1}, token=${token})}" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+        <!-- 리뷰 작성 폼 -->
+        <div class="recipe-section review-section" id="review-form" style="display: none;">
+          <h4>리뷰 작성</h4>
+          <form th:action="@{/recipes/{id}/rate(id=${recipe.id})}" method="post">
+            <input type="hidden" name="token" id="token" />
+            <div class="rating-stars mb-3 d-flex justify-content-center">
+              <span class="star" data-value="1">☆</span>
+              <span class="star" data-value="2">☆</span>
+              <span class="star" data-value="3">☆</span>
+              <span class="star" data-value="4">☆</span>
+              <span class="star" data-value="5">☆</span>
+            </div>
+            <input type="hidden" name="rating" id="rating" value="0" />
+            <div class="mb-3">
+              <label for="comment" class="form-label">리뷰:</label>
+              <textarea id="comment" name="comment" class="form-control" rows="4" placeholder="리뷰를 입력하세요..." required></textarea>
+            </div>
+            <div class="text-center">
+              <button type="submit" class="btn btn-primary btn-custom">리뷰 제출</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- 로그인되지 않은 사용자용 메시지 -->
+        <div th:if="${token.equals('null')}" class="alert alert-warning" role="alert">
+          리뷰를 작성하려면 로그인이 필요합니다.
+        </div>
       </div>
-
-
-
-      <!-- 리뷰 작성 폼 -->
-      <div class="recipe-section review-section" id="review-form" style="display: none;">
-        <h4>리뷰 작성</h4>
-        <form th:action="@{/recipes/{id}/rate(id=${recipe.id})}" method="post">
-          <!-- JWT 토큰 전송을 위한 hidden input -->
-          <input type="hidden" name="token" id="token" />
-          <!-- 별점 선택 -->
-          <div class="rating-stars mb-3 d-flex justify-content-center">
-            <span class="star" data-value="1">☆</span>
-            <span class="star" data-value="2">☆</span>
-            <span class="star" data-value="3">☆</span>
-            <span class="star" data-value="4">☆</span>
-            <span class="star" data-value="5">☆</span>
-          </div>
-          <input type="hidden" name="rating" id="rating" value="0" />
-          <div class="mb-3">
-            <label for="comment" class="form-label">리뷰:</label>
-            <textarea id="comment" name="comment" class="form-control" rows="4" placeholder="리뷰를 입력하세요..." required></textarea>
-          </div>
-          <div class="text-center">
-            <button type="submit" class="btn btn-primary">리뷰 제출</button>
-          </div>
-        </form>
-      </div>
-      <!-- 로그인되지 않은 사용자는 리뷰 작성 폼 대신 로그인 메시지 표시 -->
-      <div th:if="${token.equals('null')}" class="alert alert-warning" role="alert">
-        리뷰를 작성하려면 로그인이 필요합니다.
-      </div>
-      <script>
-        document.addEventListener("DOMContentLoaded", function() {
-          const token = localStorage.getItem('jwtToken');
-          const reviewForm = document.getElementById('review-form');
-
-          if (token) {
-            document.getElementById('token').value = token;
-            reviewForm.style.display = 'block'; // 로그인된 경우 폼 표시
-          } else {
-            reviewForm.style.display = 'none'; // 로그인되지 않은 경우 폼 숨김
-          }
-
-          const stars = document.querySelectorAll('.star');
-          const ratingInput = document.getElementById('rating');
-          let currentRating = 0;
-
-          function updateStars(rating) {
-            stars.forEach((star, index) => {
-              if (index < rating) {
-                star.style.color = '#ffcc00';
-                star.textContent = '★';
-              } else {
-                star.style.color = '#ccc';
-                star.textContent = '☆';
-              }
-            });
-          }
-
-          stars.forEach(star => {
-            star.addEventListener('mouseover', function() {
-              const value = parseInt(this.getAttribute('data-value'));
-              updateStars(value);
-            });
-
-            star.addEventListener('mouseout', function() {
-              updateStars(currentRating);
-            });
-
-            star.addEventListener('click', function() {
-              const value = parseInt(this.getAttribute('data-value'));
-              currentRating = value;
-              ratingInput.value = value;
-              updateStars(value);
-            });
-          });
-        });
-      </script>
     </div>
   </div>
 </main>
 
 <!-- Footer -->
-<footer class="mt-auto bg-dark text-white text-center py-3">
-  <p>&copy; 2024 COOKAI. All rights reserved.</p>
+<footer class="mt-auto text-center py-4">
+  <div class="container">
+    <p>&copy; 2024 COOKAI. All rights reserved.</p>
+    <div>
+      <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+      <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+      <a href="#" class="text-white"><i class="fab fa-instagram"></i></a>
+    </div>
+  </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const token = localStorage.getItem('jwtToken');
+    const reviewForm = document.getElementById('review-form');
+
+    if (token) {
+      document.getElementById('token').value = token;
+      reviewForm.style.display = 'block'; // 로그인된 경우 폼 표시
+    } else {
+      reviewForm.style.display = 'none'; // 로그인되지 않은 경우 폼 숨김
+    }
+
+    const stars = document.querySelectorAll('.star');
+    const ratingInput = document.getElementById('rating');
+    let currentRating = 0;
+
+    function updateStars(rating) {
+      stars.forEach((star, index) => {
+        if (index < rating) {
+          star.style.color = '#ffcc00';
+          star.textContent = '★';
+        } else {
+          star.style.color = '#ccc';
+          star.textContent = '☆';
+        }
+      });
+    }
+
+    stars.forEach(star => {
+      star.addEventListener('mouseover', function() {
+        const value = parseInt(this.getAttribute('data-value'));
+        updateStars(value);
+      });
+
+      star.addEventListener('mouseout', function() {
+        updateStars(currentRating);
+      });
+
+      star.addEventListener('click', function() {
+        const value = parseInt(this.getAttribute('data-value'));
+        currentRating = value;
+        ratingInput.value = value;
+        updateStars(value);
+      });
+    });
+  });
+</script>
+
 </body>
 </html>

@@ -1,76 +1,292 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>레시피 목록 - COOKAI</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
   <style>
+    /* Custom Fonts and Colors */
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #f8f9fa;
+    }
+
+    /* Navbar Styling */
+    .navbar {
+      padding-top: 15px; /* 상단 패딩 조정 */
+      padding-bottom: 15px; /* 하단 패딩 조정 */
+      position: relative; /* 절대 위치 요소의 기준 설정 */
+    }
+
     .navbar-brand {
+      position: absolute; /* 절대 위치 설정 */
+      left: 50%;
+      transform: translateX(-50%);
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 100%;
       flex-direction: column;
+      text-align: center;
     }
+
+    .navbar-brand h1 {
+      font-size: 2rem;
+      margin-bottom: 0;
+      color: #fff;
+      white-space: nowrap; /* 텍스트 래핑 방지 */
+    }
+
+    .navbar-brand p {
+      font-size: 0.9rem;
+      margin-top: 5px;
+      color: #ccc;
+      white-space: nowrap; /* 텍스트 래핑 방지 */
+    }
+
     .navbar-nav {
-      position: absolute;
+      position: absolute; /* 절대 위치 설정 */
       right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
       display: flex;
       align-items: center;
+      flex-wrap: nowrap; /* 래핑 방지 */
     }
-    .navbar-brand p {
-      margin: 0;
-      padding-top: 10px;
-      font-size: 15px;
+
+    .navbar-nav .nav-link {
+      color: #fff;
+      margin-left: 10px; /* 메뉴 항목 간 여백 조정 */
+      font-size: 0.9rem;
+      white-space: nowrap; /* 텍스트 래핑 방지 */
+      transition: color 0.3s;
     }
-    .navbar-text {
-      margin-right: 10px; /* 로그아웃 버튼과의 간격 조절 */
+
+    .navbar-nav .nav-link:hover {
+      color: #0d6efd;
     }
+
+    /* 아이콘과 텍스트 간 간격 조정 */
+    .navbar-nav .nav-link i {
+      margin-right: 5px;
+    }
+
+    /* 햄버거 메뉴의 z-index 조정 */
+    .navbar-toggler {
+      z-index: 1;
+    }
+
+    .navbar {
+      padding-top: 40px;
+      padding-bottom: 40px;
+    }
+    /* Hero Section Styling */
+    .hero-section {
+      background: url('https://source.unsplash.com/1600x900/?cooking,food') no-repeat center center;
+      background-size: cover;
+      color: white;
+      padding: 100px 0;
+      text-align: center;
+      position: relative;
+      filter: none; /* 필터 제거 */
+    }
+
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.3); /* 오버레이 불투명도 조정 */
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Search Form Styling */
+    .search-form {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .search-form .form-control {
+      height: 50px;
+      font-size: 1rem;
+      white-space: nowrap; /* 텍스트 래핑 방지 */
+    }
+
+    .search-form .btn-outline-success {
+      height: 50px;
+      font-size: 0.9rem; /* 폰트 사이즈 조정 */
+      white-space: nowrap; /* 텍스트 래핑 방지 */
+    }
+
+    /* Recipe Card Styling */
     .card {
       height: 100%;
+      transition: transform 0.3s;
     }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
     .card-img-top {
       height: 200px;
       object-fit: cover;
     }
-    .search-form {
-      max-width: 500px;
-      max-height: 30px;
-      margin: 0 auto;
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: bold;
     }
+
     .card-text {
+      font-size: 0.9rem;
+      color: #555;
+      flex-grow: 1;
       overflow: hidden;
       text-overflow: ellipsis;
       display: -webkit-box;
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
     }
-    .btn-outline-success {
-      font-size: 12px;  /* 폰트 사이즈를 키워서 텍스트가 가로로 표시되도록 */
-      white-space: nowrap; /* 텍스트를 한 줄로 표시 */
+
+    .btn-outline-primary {
+      font-size: 0.9rem;
+    }
+
+    .btn-success {
+      font-size: 0.9rem;
+    }
+
+    /* Pagination Styling */
+    .pagination {
+      margin-top: 30px;
+    }
+
+    .pagination .page-link {
+      color: #0d6efd;
+    }
+
+    .pagination .page-item.active .page-link {
+      background-color: #0d6efd;
+      border-color: #0d6efd;
+      color: #fff;
+    }
+
+    /* Footer Styling */
+    footer {
+      background-color: #343a40;
+      color: #fff;
+      padding: 20px 0;
+    }
+
+    footer a {
+      color: #fff;
+      margin: 0 10px;
+      transition: color 0.3s;
+    }
+
+    footer a:hover {
+      color: #0d6efd;
+    }
+
+    /* 반응형 디자인 개선 */
+    @media (max-width: 992px) {
+      .navbar-brand {
+        position: static; /* 작은 화면에서는 절대 위치 해제 */
+        transform: none;
+      }
+
+      .navbar-nav {
+        position: static; /* 작은 화면에서는 절대 위치 해제 */
+        transform: none;
+        margin-top: 10px; /* 메뉴 항목과 브랜드 간 간격 추가 */
+      }
+
+      .navbar-nav .nav-link {
+        margin-left: 10px; /* 메뉴 항목 간 여백 축소 */
+        font-size: 0.9rem; /* 폰트 크기 축소 */
+      }
+
+      .search-form .form-control,
+      .search-form .btn-outline-success {
+        height: 40px;
+        font-size: 0.9rem;
+      }
     }
   </style>
 
   <script th:inline="javascript">
+    /*<![CDATA[*/
     document.addEventListener("DOMContentLoaded", function() {
+      const username = /*[[${username}]]*/ 'null';
+      const token = /*[[${token}]]*/ 'null';
+      const logoutSuccess = /*[[${logoutSuccess}]]*/ false;
+
+      if (username && username !== 'null') {
+        localStorage.setItem('username', username);
+      }
+
+      if (token && token !== 'null') {
+        localStorage.setItem('jwtToken', token);
+      }
+
+      if (logoutSuccess) {
+        console.log("로그아웃 성공");
+        localStorage.removeItem('username');
+        localStorage.removeItem('jwtToken');
+      }
+
       const storedUsername = localStorage.getItem('username');
+      const storedToken = localStorage.getItem('jwtToken');
+
       if (storedUsername) {
         document.getElementById('header-username').textContent = `안녕하세요, ${storedUsername}`;
         document.getElementById('login-item').style.display = 'none';
         document.getElementById('signup-item').style.display = 'none';
         document.getElementById('welcome-item').style.display = 'inline';
         document.getElementById('logout-item').style.display = 'inline';
+      } else {
+        document.getElementById('login-item').style.display = 'block';
+        document.getElementById('signup-item').style.display = 'block';
+        document.getElementById('welcome-item').style.display = 'none';
+        document.getElementById('logout-item').style.display = 'none';
       }
 
-      // 설명 텍스트 자르기
-      const cardTexts = document.querySelectorAll('.card-text');
-      cardTexts.forEach(text => {
-        const content = text.textContent;
-        if (content.length > 100) {
-          text.textContent = content.slice(0, 100) + '...';
-        }
+      // 사용자 냉장고 정보 페이지로 이동
+      document.getElementById('inventory-link')?.addEventListener('click', function(event) {
+        event.preventDefault();
+        const jwtToken = localStorage.getItem('jwtToken');
+        window.location.href = `/inventory?token=${jwtToken}`;
       });
+
+      document.getElementById('mypage-link')?.addEventListener('click', function(event) {
+        event.preventDefault();
+        const jwtToken = localStorage.getItem('jwtToken');
+        window.location.href = `/users/mypage?token=${jwtToken}`;
+      });
+
+      // 레시피 추천 페이지로 이동
+      document.getElementById('recommendations-link')?.addEventListener('click', function(event) {
+        event.preventDefault();
+        const jwtToken = localStorage.getItem('jwtToken');
+        if (!jwtToken) {
+          alert('로그인이 필요합니다.');
+          window.location.href = '/users/login';
+          return;
+        }
+        window.location.href = `/recommendations?token=${jwtToken}`;
+      });
+
+      // 설명 텍스트 자르기 (JavaScript에서 이미 처리)
     });
+    /*]]>*/
   </script>
 </head>
 <body class="d-flex flex-column min-vh-100">
@@ -79,26 +295,31 @@
 <header class="bg-dark text-white">
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
+      <!-- navbar-toggler을 먼저 배치하여 모바일 뷰에서 햄버거 메뉴가 왼쪽에 위치 -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <!-- navbar-brand을 가운데에 배치 (절대 위치) -->
       <a class="navbar-brand" href="/">
         <h1>COOKAI</h1>
         <p>나만의 레시피를 추천받아보세요!</p>
       </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
+      <!-- navbar-collapse을 오른쪽에 배치 -->
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
           <li class="nav-item" id="login-item">
-            <a class="nav-link" href="/users/login">로그인</a>
+            <a class="nav-link" href="/users/login"><i class="fas fa-sign-in-alt me-1"></i> 로그인</a>
           </li>
           <li class="nav-item" id="signup-item">
-            <a class="nav-link" href="/users/signup">회원가입</a>
+            <a class="nav-link" href="/users/signup"><i class="fas fa-user-plus me-1"></i> 회원가입</a>
           </li>
-          <li class="nav-item" id="welcome-item" style="display:none;">
-            <span class="navbar-text" id="header-username"></span>
+          <li class="nav-item d-flex align-items-center" id="welcome-item" style="display:none;">
+            <span class="navbar-text me-2" id="header-username"></span>
+            <i class="fas fa-user-circle fa-lg"></i>
           </li>
           <li class="nav-item" id="logout-item" style="display:none;">
-            <a class="nav-link" href="/users/logout">로그아웃</a>
+            <a class="nav-link" href="/users/logout"><i class="fas fa-sign-out-alt me-1"></i> 로그아웃</a>
           </li>
         </ul>
       </div>
@@ -114,7 +335,7 @@
       <!-- 검색 폼 수정 -->
       <form class="d-flex mb-4 search-form" th:action="@{/recipes}" method="get">
         <input class="form-control me-2" type="search" placeholder="레시피 검색" aria-label="Search" name="keyword" th:value="${keyword}">
-        <button class="btn btn-outline-success" type="submit" style="font-size: 10px">검색</button>
+        <button class="btn btn-outline-success" type="submit">검색</button>
       </form>
 
       <!-- 검색 결과가 없을 때 메시지 표시 -->
@@ -130,8 +351,8 @@
               <img th:src="@{${recipe.thumbnail}}" class="card-img-top" alt="레시피 썸네일">
               <div class="card-body d-flex flex-column">
                 <h5 class="card-title" th:text="${recipe.title}">레시피 제목</h5>
-                <p class="card-text flex-grow-1" th:text="${recipe.description}">레시피 설명</p>
-                <a th:href="@{/recipes/{id}(id=${recipe.id}, token=${token})}" class="btn btn-primary mt-auto recipe-link">레시피 보기</a>
+                <p class="card-text" th:text="${recipe.description}">레시피 설명</p>
+                <a th:href="@{/recipes/{id}(id=${recipe.id}, token=${token})}" class="btn btn-primary mt-auto">레시피 보기</a>
               </div>
             </div>
           </div>
@@ -177,7 +398,14 @@
 
 <!-- Footer -->
 <footer class="mt-auto bg-dark text-white text-center py-3">
-  <p>&copy; 2024 COOKAI. All rights reserved.</p>
+  <div class="container">
+    <p>&copy; 2024 COOKAI. All rights reserved.</p>
+    <div>
+      <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+      <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+      <a href="#" class="text-white"><i class="fab fa-instagram"></i></a>
+    </div>
+  </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

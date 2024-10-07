@@ -1,73 +1,185 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Home - COOKAI</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
     <script th:inline="javascript">
+        /*<![CDATA[*/
+        console.log('logoutSuccess:', /*[[${logoutSuccess}]]*/ false);
+        /*]]>*/
+        /*<![CDATA[*/
         document.addEventListener("DOMContentLoaded", function() {
-            const username = [[${username}]];
-            const token = [[${token}]];
-            const logoutSuccess = [[${logoutSuccess}]];
+            const username = /*[[${username}]]*/ 'null';
+            const token = /*[[${token}]]*/ 'null';
+            const logoutSuccess = /*[[${logoutSuccess}]]*/ false;
 
-            if (username) {
+            if (username && username !== 'null') {
                 localStorage.setItem('username', username);
             }
 
-            if (token) {
+            if (token && token !== 'null') {
                 localStorage.setItem('jwtToken', token);
             }
 
             if (logoutSuccess) {
+                console.log("로그아웃 성공");
                 localStorage.removeItem('username');
                 localStorage.removeItem('jwtToken');
             }
 
             const storedUsername = localStorage.getItem('username');
+            const storedToken = localStorage.getItem('jwtToken');
+
             if (storedUsername) {
                 document.getElementById('header-username').textContent = `안녕하세요, ${storedUsername}`;
                 document.getElementById('login-item').style.display = 'none';
                 document.getElementById('signup-item').style.display = 'none';
-                document.getElementById('welcome-item').style.display = 'inline';
-                document.getElementById('logout-item').style.display = 'inline';
+                document.getElementById('welcome-item').style.display = 'flex';
+                document.getElementById('logout-item').style.display = 'block';
             } else {
-                document.getElementById('login-item').style.display = 'inline';
-                document.getElementById('signup-item').style.display = 'inline';
+                document.getElementById('login-item').style.display = 'block';
+                document.getElementById('signup-item').style.display = 'block';
                 document.getElementById('welcome-item').style.display = 'none';
                 document.getElementById('logout-item').style.display = 'none';
             }
 
+            // 사용자 냉장고 정보 페이지로 이동
             document.getElementById('inventory-link').addEventListener('click', function(event) {
                 event.preventDefault();
                 const jwtToken = localStorage.getItem('jwtToken');
                 window.location.href = `/inventory?token=${jwtToken}`;
             });
+
+            document.getElementById('mypage-link').addEventListener('click', function(event) {
+                event.preventDefault();
+                const jwtToken = localStorage.getItem('jwtToken');
+                if (!jwtToken) {
+                    alert('로그인이 필요합니다.');
+                    window.location.href = '/users/login';
+                    return;
+                }
+                window.location.href = `/users/mypage?token=${jwtToken}`;
+            });
+
+            // 레시피 추천 페이지로 이동
+            document.getElementById('recommendations-link').addEventListener('click', function(event) {
+                event.preventDefault();
+                const jwtToken = localStorage.getItem('jwtToken');
+                if (!jwtToken) {
+                    alert('로그인이 필요합니다.');
+                    window.location.href = '/users/login';
+                    return;
+                }
+                window.location.href = `/recommendations?token=${jwtToken}`;
+            });
+
+
         });
+        /*]]>*/
     </script>
 
     <style>
-        .navbar-brand {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            flex-direction: column;
+        /* Custom Fonts and Colors */
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f9fa;
         }
-        .navbar-nav {
-            position: absolute;
-            right: 15px;
-            display: flex;
-            align-items: center;
+        .navbar-brand h1 {
+            font-size: 2rem;
+            margin-bottom: 0;
         }
         .navbar-brand p {
-            margin: 0;
-            padding-top: 10px;
-            font-size: 15px;
+            font-size: 1rem;
+            margin-top: 0;
         }
-        .navbar-text {
-            margin-right: 10px; /* 로그아웃 버튼과의 간격 조절 */
+        .hero-section {
+            background: url('https://gongu.copyright.or.kr/gongu/wrt/cmmn/wrtFileImageView.do?wrtSn=13221425&filePath=L2Rpc2sxL25ld2RhdGEvMjAxOS8yMS9DTFMxMDAwNC8xMzIyMTQyNV9XUlRfMjAxOTExMjFfMQ==&thumbAt=Y&thumbSe=b_tbumb&wrtTy=10004') no-repeat center center;
+            background-size: cover;
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+            position: relative;
         }
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        .btn-custom {
+            transition: transform 0.3s, background-color 0.3s;
+        }
+        .btn-custom:hover {
+            transform: translateY(-5px);
+            background-color: #0056b3;
+            color: white;
+        }
+        .card-icon {
+            font-size: 3rem;
+            color: #0d6efd;
+            margin-bottom: 15px;
+        }
+
+        footer {
+            background-color: #343a40;
+        }
+
+        /* 추가 스타일 */
+        .navbar-brand {
+            /* 텍스트 가운데 정렬 보장 */
+            text-align: center;
+        }
+
+        .navbar {
+            padding-top: 20px; /* 상단 패딩 추가 */
+            padding-bottom: 20px; /* 하단 패딩 추가 */
+        }
+
+        /* navbar-brand을 절대 위치로 설정하여 가운데 배치 */
+        .navbar .navbar-brand {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: 20px; /* 상단 마진을 추가하여 텍스트가 브라우저 바와 겹치지 않도록 조정 */
+        }
+
+        /* navbar-nav을 오른쪽으로 정렬 */
+        .navbar-nav {
+            margin-left: auto;
+        }
+
+        /* 햄버거 메뉴가 navbar-brand와 겹치지 않도록 z-index 조정 */
+        .navbar-toggler {
+            z-index: 1;
+        }
+
+        @media (max-width: 992px) {
+            .navbar .navbar-brand {
+                position: relative;
+                transform: none;
+            }
+            .navbar-nav {
+                margin-left: 0;
+            }
+        }
+        /*!* 네비게이션 링크 아이콘과 텍스트 간 간격 조정 *!*/
+        /*.navbar-nav .nav-link {*/
+        /*    display: flex;*/
+        /*    align-items: center;*/
+        /*}*/
+
+        /*.navbar-nav .nav-link i {*/
+        /*    margin-right: 5px;*/
+        /*}*/
     </style>
 </head>
 <body class="d-flex flex-column min-vh-100">
@@ -76,26 +188,29 @@
 <header class="bg-dark text-white">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
+            <!-- navbar-brand을 절대 위치로 설정하여 가운데 배치 -->
             <a class="navbar-brand" href="/">
                 <h1>COOKAI</h1>
                 <p>나만의 레시피를 추천받아보세요!</p>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item" id="login-item">
-                        <a class="nav-link" href="/users/login">로그인</a>
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item" id="login-item" style="display: block;">
+                        <a class="nav-link" href="/users/login"><i class="fas fa-sign-in-alt"></i> 로그인</a>
                     </li>
-                    <li class="nav-item" id="signup-item">
-                        <a class="nav-link" href="/users/signup">회원가입</a>
+                    <li class="nav-item" id="signup-item" style="display: block;">
+                        <a class="nav-link" href="/users/signup"><i class="fas fa-user-plus"></i> 회원가입</a>
                     </li>
-                    <li class="nav-item" id="welcome-item" style="display:none;">
-                        <span class="navbar-text" id="header-username"></span>
+                    <li class="nav-item d-flex align-items-center" id="welcome-item" style="display: none;">
+                        <span class="navbar-text me-2" id="header-username"></span>
+                        <i class="fas fa-user-circle fa-lg"></i>
                     </li>
-                    <li class="nav-item" id="logout-item" style="display:none;">
-                        <a class="nav-link" href="/users/logout">로그아웃</a> <!-- href="#"로 변경 -->
+                    <li class="nav-item" id="logout-item" style="display: none;">
+                        <a class="nav-link" href="/users/logout"><i class="fas fa-sign-out-alt"></i> 로그아웃</a>
                     </li>
                 </ul>
             </div>
@@ -103,27 +218,66 @@
     </nav>
 </header>
 
+<!-- Hero Section -->
+<section class="hero-section position-relative">
+    <div class="hero-overlay"></div>
+    <div class="container hero-content">
+        <h2 class="display-4">당신만을 위한 맞춤 레시피</h2>
+        <p class="lead">COOKAI와 함께 다양한 요리를 쉽고 즐겁게 만들어보세요!</p>
+        <a href="/recipes" class="btn btn-primary btn-lg mt-3">레시피 둘러보기</a>
+    </div>
+</section>
+
 <!-- Main Content -->
 <main class="container my-5">
-    <h2 class="text-center mb-4">Home</h2>
-    <div class="row">
+    <h2 class="text-center mb-5">기능</h2>
+    <div class="row g-4">
         <div class="col-md-4">
-            <a href="#" id="inventory-link" class="btn btn-outline-primary btn-lg w-100 mb-3">사용자 냉장고 정보 보기</a>
+            <div class="card text-center shadow-sm h-100">
+                <div class="card-body">
+                    <i class="fas fa-warehouse card-icon"></i>
+                    <h5 class="card-title">냉장고 관리</h5>
+                    <p class="card-text">내 냉장고에 있는 재료를 관리하고 필요한 재료를 쉽게 확인하세요.</p>
+                    <a href="#" id="inventory-link" class="btn btn-outline-primary btn-custom">냉장고 보기</a>
+                </div>
+            </div>
         </div>
         <div class="col-md-4">
-            <a href="#" class="btn btn-outline-primary btn-lg w-100 mb-3">마이페이지</a>
+            <div class="card text-center shadow-sm h-100">
+                <div class="card-body">
+                    <i class="fas fa-user card-icon"></i>
+                    <h5 class="card-title">마이페이지</h5>
+                    <p class="card-text">추천받은 레시피와 리뷰했던 레시피를 살펴보세요.</p>
+                    <a href="#" id="mypage-link" class="btn btn-outline-primary btn-custom">마이페이지</a>
+                </div>
+            </div>
         </div>
         <div class="col-md-4">
-            <a href="/recipes" class="btn btn-outline-primary btn-lg w-100 mb-3">전체 레시피 보러가기</a>
+            <div class="card text-center shadow-sm h-100">
+                <div class="card-body">
+                    <i class="fas fa-utensils card-icon"></i>
+                    <h5 class="card-title">레시피 추천</h5>
+                    <p class="card-text">당신의 취향에 맞는 레시피를 추천받아보세요.</p>
+                    <button id="recommendations-link" class="btn btn-success btn-custom">레시피 추천받기</button>
+                </div>
+            </div>
         </div>
     </div>
 </main>
 
 <!-- Footer -->
-<footer class="mt-auto bg-dark text-white text-center py-3">
-    <p>&copy; 2024 COOKAI. All rights reserved.</p>
+<footer class="mt-auto bg-dark text-white text-center py-4">
+    <div class="container">
+        <p>&copy; 2024 COOKAI. All rights reserved.</p>
+        <div>
+            <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="text-white"><i class="fab fa-instagram"></i></a>
+        </div>
+    </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 </body>
 </html>

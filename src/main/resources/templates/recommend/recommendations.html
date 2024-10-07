@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>추천 레시피</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      flex-direction: column;
+    }
+    .navbar-nav {
+      position: absolute;
+      right: 15px;
+      display: flex;
+      align-items: center;
+    }
+    .navbar-brand p {
+      margin: 0;
+      padding-top: 10px;
+      font-size: 15px;
+    }
+    .navbar-text {
+      margin-right: 10px;
+    }
+    body {
+      background-color: #f8f9fa;
+    }
+    .recipe-header {
+      background-color: #343a40;
+      color: white;
+      padding: 2rem 0;
+    }
+    .recipe-title {
+      font-size: 2.5rem;
+      margin-bottom: 0;
+    }
+    .recipe-image {
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .recipe-description {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #495057;
+    }
+    .recipe-section {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .recipe-section h4 {
+      color: #343a40;
+      border-bottom: 2px solid #dee2e6;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .ingredient-list, .step-list, .rating-list {
+      padding-left: 1.5rem;
+    }
+    .ingredient-list li, .step-list li, .rating-list li {
+      margin-bottom: 0.5rem;
+    }
+    .rating-list .rating-item {
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #dee2e6;
+      padding-bottom: 0.5rem;
+    }
+    .rating-item .username {
+      font-weight: bold;
+    }
+  </style>
+  <script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+      const storedUsername = localStorage.getItem('username');
+      if (storedUsername) {
+        document.getElementById('header-username').textContent = `안녕하세요, ${storedUsername}`;
+        document.getElementById('login-item').style.display = 'none';
+        document.getElementById('signup-item').style.display = 'none';
+        document.getElementById('welcome-item').style.display = 'inline';
+        document.getElementById('logout-item').style.display = 'inline';
+      }
+
+      // 설명 텍스트 자르기
+      const cardTexts = document.querySelectorAll('.card-text');
+      cardTexts.forEach(text => {
+        const content = text.textContent;
+        if (content.length > 100) {
+          text.textContent = content.slice(0, 100) + '...';
+        }
+      });
+    });
+  </script>
+</head>
+
+<body>
+<!-- Header -->
+<header class="bg-dark text-white">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">
+        <h1>COOKAI</h1>
+        <p>나만의 레시피를 추천받아보세요!</p>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item" id="login-item">
+            <a class="nav-link" href="/users/login">로그인</a>
+          </li>
+          <li class="nav-item" id="signup-item">
+            <a class="nav-link" href="/users/signup">회원가입</a>
+          </li>
+          <li class="nav-item" id="welcome-item" style="display:none;">
+            <span class="navbar-text" id="header-username"></span>
+          </li>
+          <li class="nav-item" id="logout-item" style="display:none;">
+            <a class="nav-link" href="/users/logout">로그아웃</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- Main Content -->
+<main class="container my-5">
+  <h2 class="text-center mb-4">추천 레시피</h2>
+  <div class="row" th:if="${!#lists.isEmpty(recommendedRecipes)}">
+    <div class="col-md-4" th:each="recipe : ${recommendedRecipes}">
+      <div class="card mb-4">
+        <img th:src="@{${recipe.thumbnail}}" class="card-img-top" alt="레시피 썸네일">
+        <div class="card-body">
+          <h5 class="card-title" th:text="${recipe.title}">레시피 제목</h5>
+          <p class="card-text" th:text="${recipe.description}">레시피 설명</p>
+          <a th:href="@{/recipes/{id}(id=${recipe.id}, token=${token})}" class="btn btn-primary">레시피 보러가기</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div th:if="${#lists.isEmpty(recommendedRecipes)}">
+    <p>추천된 레시피가 없습니다.</p>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="mt-auto bg-dark text-white text-center py-3">
+  <p>&copy; 2024 COOKAI. All rights reserved.</p>
+</footer>
+</body>
+</html>

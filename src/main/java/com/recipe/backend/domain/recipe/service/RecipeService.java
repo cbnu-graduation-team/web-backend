@@ -12,6 +12,7 @@ import com.recipe.backend.domain.recipe.repository.RecipeRepository;
 import com.recipe.backend.domain.recipe.repository.RecipeStepRepository;
 import com.recipe.backend.domain.recipe_ingredient.domain.RecipeIngredient;
 import com.recipe.backend.domain.recipe_ingredient.repository.RecipeIngredientRepository;
+import com.recipe.backend.domain.recommend.service.RecommendService;
 import com.recipe.backend.global.util.recipedata.IngredientDTO;
 import com.recipe.backend.global.util.recipedata.RecipeDTO;
 import com.recipe.backend.global.util.recipedata.StepDTO;
@@ -35,6 +36,7 @@ public class RecipeService {
     private final RecipeStepRepository recipeStepRepository;
     private final RecipeIngredientRepository recipeIngredientRepository;
     private final IngredientRepository ingredientRepository;
+
 
     public void loadAndSaveRecipes(String jsonFilePath) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();

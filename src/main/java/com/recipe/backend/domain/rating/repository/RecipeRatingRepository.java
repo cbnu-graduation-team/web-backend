@@ -15,4 +15,6 @@ public interface RecipeRatingRepository extends JpaRepository<RecipeRating, Long
     List<RecipeRating> findByUser(User user);
 
     Page<RecipeRating> findByRecipeId(Long recipeId, Pageable pageable);
+
+    List<RecipeRating> findByUserId(Long id);
 }

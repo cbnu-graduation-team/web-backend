@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>마이페이지</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      flex-direction: column;
+    }
+    .navbar-nav {
+      position: absolute;
+      right: 15px;
+      display: flex;
+      align-items: center;
+    }
+    .navbar-brand p {
+      margin: 0;
+      padding-top: 10px;
+      font-size: 15px;
+    }
+    .navbar-text {
+      margin-right: 10px; /* 로그아웃 버튼과의 간격 조절 */
+    }
+    .card {
+      height: 100%;
+    }
+    .card-img-top {
+      height: 200px;
+      object-fit: cover;
+    }
+    .search-form {
+      max-width: 500px;
+      max-height: 30px;
+      margin: 0 auto;
+    }
+    .card-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
+    .btn-outline-success {
+      font-size: 12px;  /* 폰트 사이즈를 키워서 텍스트가 가로로 표시되도록 */
+      white-space: nowrap; /* 텍스트를 한 줄로 표시 */
+    }
+  </style>
+
+  <script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+      const storedUsername = localStorage.getItem('username');
+      if (storedUsername) {
+        document.getElementById('header-username').textContent = `안녕하세요, ${storedUsername}`;
+        document.getElementById('login-item').style.display = 'none';
+        document.getElementById('signup-item').style.display = 'none';
+        document.getElementById('welcome-item').style.display = 'inline';
+        document.getElementById('logout-item').style.display = 'inline';
+      }
+
+      // 설명 텍스트 자르기
+      const cardTexts = document.querySelectorAll('.card-text');
+      cardTexts.forEach(text => {
+        const content = text.textContent;
+        if (content.length > 100) {
+          text.textContent = content.slice(0, 100) + '...';
+        }
+      });
+    });
+  </script>
+</head>
+<body>
+<header class="bg-dark text-white">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">
+        <h1>COOKAI</h1>
+        <p>나만의 레시피를 추천받아보세요!</p>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item" id="login-item">
+            <a class="nav-link" href="/users/login">로그인</a>
+          </li>
+          <li class="nav-item" id="signup-item">
+            <a class="nav-link" href="/users/signup">회원가입</a>
+          </li>
+          <li class="nav-item" id="welcome-item" style="display:none;">
+            <span class="navbar-text" id="header-username"></span>
+          </li>
+          <li class="nav-item" id="logout-item" style="display:none;">
+            <a class="nav-link" href="/users/logout">로그아웃</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="container my-5">
+  <h2 class="text-center mb-4">마이페이지</h2>
+
+  <!-- 추천받은 레시피 섹션 -->
+  <h4>추천받은 레시피</h4>
+  <div id="recommended-recipes" class="row">
+    <!-- 추천받은 레시피가 여기에 추가됩니다. -->
+    <div class="col-md-4 mb-3" th:each="recipe : ${recommendedRecipes}">
+      <div class="card">
+        <img th:src="@{${recipe.thumbnail}}" class="card-img-top" alt="Recipe Image">
+        <div class="card-body">
+          <h5 class="card-title" th:text="${recipe.title}"></h5>
+          <p class="card-text" th:text="${recipe.description}"></p>
+          <a th:href="@{/recipes/{id}(id=${recipe.id})}" class="btn btn-primary">상세 보기</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 내가 리뷰한 레시피 섹션 -->
+  <h4>내가 리뷰한 레시피</h4>
+  <div id="reviewed-recipes" class="row">
+    <!-- 리뷰한 레시피가 여기에 추가됩니다. -->
+    <div class="col-md-4 mb-3" th:each="review : ${reviewedRecipes}">
+      <div class="card">
+        <img th:src="@{${review.thumbnail}}" class="card-img-top" alt="Recipe Image">
+        <div class="card-body">
+          <h5 class="card-title" th:text="${review.title}"></h5>
+          <p class="card-text" th:text="${review.description}"></p>
+          <a th:href="@{/recipes/{id}(id=${review.id})}" class="btn btn-primary">상세 보기</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

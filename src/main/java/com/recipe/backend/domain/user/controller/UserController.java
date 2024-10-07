@@ -1,6 +1,12 @@
 package com.recipe.backend.domain.user.controller;
 
 import com.recipe.backend.domain.inventory.repository.InventoryRepository;
+import com.recipe.backend.domain.rating.domain.RecipeRatingResponseDTO;
+import com.recipe.backend.domain.rating.service.RecipeRatingService;
+import com.recipe.backend.domain.recipe.domain.RecipeDetailResponseDTO;
+import com.recipe.backend.domain.recommend.domain.Recommendation;
+import com.recipe.backend.domain.recommend.domain.dto.RecommendationResponseDTO;
+import com.recipe.backend.domain.recommend.service.RecommendService;
 import com.recipe.backend.domain.user.dto.LoginRequest;
 import com.recipe.backend.domain.user.dto.LoginResponse;
 import com.recipe.backend.domain.user.dto.SignupRequest;
@@ -19,11 +25,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/users")
@@ -32,6 +37,8 @@ public class UserController {
     private final UserService userService;
     private final AuthenticationManager am;
     private final JwtUtil jwtUtil;
+    private final RecommendService recommendService;
+    private final RecipeRatingService ratingService;
 
     @GetMapping("/signup")
     public String showSignupForm(Model model) {
@@ -92,5 +99,21 @@ public class UserController {
         redirectAttributes.addFlashAttribute("logoutSuccess", true);
 
         return "redirect:/";
+    }
+
+    @GetMapping("/mypage")
+    public String getMyPage(@RequestParam("token") String token, Model model) {
+        String username = jwtUtil.getUserNameFromJwtToken(token);
+
+        // 추천받은 레시피 및 리뷰한 레시피 가져오기
+        List<RecipeDetailResponseDTO> recommendedRecipes = recommendService.getRecommendedRecipes(username);
+        List<RecipeDetailResponseDTO> reviewedRecipes = ratingService.getUserReviewedRecipes(username);
+
+        // 모델에 추가
+        model.addAttribute("recommendedRecipes", recommendedRecipes);
+        model.addAttribute("reviewedRecipes", reviewedRecipes);
+        model.addAttribute("token", token); // 필요시 token 추가
+
+        return "mypage"; // 마이페이지 템플릿 경로
     }
 }

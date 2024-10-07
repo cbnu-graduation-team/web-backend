@@ -1,41 +1,28 @@
 package com.recipe.backend.domain.recommend.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.ToString;
+
+@ToString
 public class RecommendationDTO {
-    private Long recipe_id;
-    private String type;
-    private Double accuracy;
-    private Double similarity;
+    @JsonProperty("recipe_id")
+    private Long recipeId;  // recipe_id와 일치해야 함
+    private Double score;   // Flask 서버에서 반환하는 score에 대응
 
-    // Getters and setters
-    public Long getRecipe_id() {
-        return recipe_id;
+    // Getters and Setters
+    public Long getRecipeId() {
+        return recipeId;
     }
 
-    public void setRecipe_id(Long recipe_id) {
-        this.recipe_id = recipe_id;
+    public void setRecipeId(Long recipeId) {
+        this.recipeId = recipeId;
     }
 
-    public String getType() {
-        return type;
+    public Double getScore() {
+        return score;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public Double getAccuracy() {
-        return accuracy;
-    }
-
-    public void setAccuracy(Double accuracy) {
-        this.accuracy = accuracy;
-    }
-
-    public Double getSimilarity() {
-        return similarity;
-    }
-
-    public void setSimilarity(Double similarity) {
-        this.similarity = similarity;
+    public void setScore(Double score) {
+        this.score = score;
     }
 }

@@ -119,6 +119,8 @@
       <li th:each="ingredient : ${ingredients}" class="list-group-item d-flex justify-content-between align-items-center">
         <span th:text="${ingredient.name}">재료 이름</span>
         <span th:text="${ingredient.expiryDate}">유통기한</span>
+        <span th:if="${ingredient.isExpiringSoon}" class="badge bg-warning text-dark ms-2">유통기한 임박</span>
+        <span th:if="${ingredient.isExpired}" class="badge bg-danger ms-2">유통기한 지남</span>
         <form th:action="@{/inventory/delete}" method="post" class="ms-3">
           <input type="hidden" name="name" th:value="${ingredient.name}">
           <input type="hidden" name="token" th:value="${token}">
